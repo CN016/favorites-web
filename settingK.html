@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设置密码</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            text-align: center;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        input {
+            width: 200px;
+            padding: 10px;
+            margin: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+    <script src="j.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <h2>设置K密码</h2>
+    <input type="password" id="password" placeholder="输入新密码">
+    <button onclick="changePassword()">保存</button>
+</div>
+
+<script>
+    function changePassword() {
+        // 在此添加修改密码的逻辑
+        // 如果修改成功，可以添加关闭页面的逻辑
+        // 例如：window.close();
+        let token = localStorage.getItem('token');
+        // alert(token)
+        let k = document.getElementById('password').value
+        let settings = {
+            "url": "/api/settingK",
+            "method": "POST",
+            "timeout": 0,
+            "async": false,
+            "headers": {
+                "Content-Type": "application/json",
+                "token": token
+            },
+            "data": JSON.stringify({
+                "k": k
+            }),
+            "success": function (response,status,xhr) {
+                if (status === 500){
+                    alert('错误');
+                    return;
+                }
+                if (response.toString().includes("成功")){
+                    alert('成功');
+                    window.close()
+                    return;
+                }
+                alert(response.toString())
+            },
+            "error": function (error) {
+                alert('错误');
+            }
+        };
+        $.ajax(settings);
+        // 在这里可以处理输入的信息，例如发送到服务器等操作
+    }
+</script>
+
+</body>
+</html>

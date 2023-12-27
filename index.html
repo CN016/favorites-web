@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户登录</title>
+    <link href="ico.jpg" rel="icon">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: url('./bj.jpg') center/100% 100% no-repeat fixed;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        #registration-form {
+            position: fixed;
+            top: 150px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            width: 400px;
+            max-width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+            animation: fadeInUpCenter 0.6s ease-out;
+            margin-top: 0px; /* 顶部距离 */
+        }
+
+        @keyframes fadeInUpCenter {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            margin-top: 5px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .terms {
+            font-size: 12px;
+            color: #777;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .terms a {
+            color: #333;
+            text-decoration: underline;
+        }
+        .my-logo img{
+            top: 0;
+            margin-top: 0;
+            width: 500px;
+            height: auto;
+            margin-right: 20px; /* 设置图片右边距，可以根据需要调整 */
+        }
+        .my-logo{
+            position: fixed;
+            display: inline-block;
+            top: 45px;
+            margin-left: 100px;
+            margin-top: 0; /* 顶部距离 */
+            margin-bottom: 0; /* 设置外边距为零 */
+        }
+
+        /*.my-logo,
+        #registration-form {
+            text-align: center; !* 如果内容需要居中对齐 *!
+        }*/
+
+    </style>
+
+    <script src="./j.js" ></script>
+</head>
+<body>
+<div class="my-logo" >
+    <img src="pocket.png">
+</div>
+<div id="registration-form">
+    <h2>用户登录</h2>
+    <f>
+        <l for="username">用户名:</l>
+        <input type="text" id="username" name="username" required>
+
+
+        <l for="password">密码:</l>
+        <input type="password" id="password" name="password" required>
+
+        <button onclick="login()">登录</button>
+        <button onclick="register()">注册</button>
+    </f>
+    <p class="terms"><a href="./fw.html">服务条款</a>.</p>
+</div>
+</body>
+<script>
+    function register(){
+        window.location.href = "./Register.html";
+    }
+
+    function user(){
+        window.location.replace("userMain.html")
+    }
+
+    async function login() {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        try {
+            const response = await $.ajax({
+                url: "/api/login",
+                method: "POST",
+                timeout: 0,
+                async: false,
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                data: JSON.stringify({
+                    "username": username,
+                    "password": password
+                }),
+                success: function (data, status, xhr) {
+                    let responseHeader = xhr.getResponseHeader('token')
+                    localStorage.setItem('token', responseHeader);
+                }
+            });
+
+            if (response.toString().includes("成功")) {
+                alert('登录成功！');
+                user();
+            } else {
+                alert('登录失败！');
+            }
+        } catch (error) {
+            alert(error);
+        }
+    }
+</script>
+</html>

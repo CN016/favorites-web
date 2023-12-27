@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="ico.jpg" rel="icon">
+    <title>网页收藏夹</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        #wrapper {
+            display: flex;
+            height: 100vh;
+        }
+
+        #sidebar {
+            flex: 0 0 250px;
+            background-color: #3DBC93;
+            color: #fff;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+            transition: flex 0.3s;
+            overflow: hidden;
+        }
+
+        #sidebar:hover {
+            flex: 0 0 300px;
+        }
+
+        #content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        #sidebar h2 {
+            margin-bottom: 20px;
+        }
+
+        #menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #menu li {
+            margin-bottom: 10px;
+        }
+
+        #menu a {
+            text-decoration: none;
+            color: #fff;
+            font-weight: bold;
+            font-size: 16px;
+            transition: color 0.3s;
+            display: block;
+            padding: 8px;
+            border-radius: 5px;
+        }
+        #logo img{
+            width: 120px;
+            height: auto;
+        }
+
+        #menu a:hover {
+            color: #ffd700;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .active {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Customize scroll bar */
+        ::webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::webkit-scrollbar-thumb {
+            background-color: #888;
+            border-radius: 4px;
+        }
+
+        ::webkit-scrollbar-thumb:hover {
+            background-color: #555;
+        }
+    </style>
+    <script src="j.js"></script>
+</head>
+<body>
+<div id="wrapper">
+    <div id="sidebar">
+        <div id="logo">
+            <img src="./logo.jpg">
+        </div>
+        <ul id="menu">
+            <li><a href="#" onclick="chakan()" id="chakan">查看收藏夹</a></li>
+            <li><a href="#" onclick="change()" id="xiugai">修改密码</a></li>
+            <li><a href="#" onclick="tixin()" id="tixin">提醒事项</a></li>
+            <li><a href="#" onclick="quxiao()" id="quxiao">退出登录</a></li>
+            <!-- 添加更多的功能链接 -->
+        </ul>
+    </div>
+    <div id="content">
+        <!-- 这里放置你的网页内容 -->
+        <h1>欢迎使用网页收藏夹</h1>
+        <p>在这里，您可以轻松管理和访问您喜欢的网站，同时查看您的收藏夹、修改密码以及处理提醒事项。</p>
+    </div>
+</div>
+
+<script>
+
+
+    function shifoudenglu(){
+        let token = localStorage.getItem('token');
+        let settings = {
+            "url": "/api/favorites/get",
+            "method": "GET",
+            "timeout": 0,
+            "async": false,
+            "headers": {
+                "token": token,
+                "k":"1"
+            },
+            "success": function (response,status,xhr) {
+                if (status === 500){
+                    alert('请重新登录');
+                    window.location.href="./index.html";
+                }
+            },
+            "error": function (error) {
+                alert('请重新登录');
+                window.location.href="./index.html";
+            }
+        };
+        $.ajax(settings);
+    }
+
+    function quxiao(){
+        localStorage.setItem('token','');
+        window.location.href="./index.html";
+    }
+
+    function tixin(){
+        shifoudenglu()
+        var element = document.getElementById("xiugai");
+        element.setAttribute('class','');
+        element = document.getElementById("chakan");
+        element.setAttribute('class','');
+        element = document.getElementById("tixin");
+        element.setAttribute('class','active');
+
+
+    }
+
+    function chakan(){
+        shifoudenglu()
+        let element = document.getElementById("xiugai");
+        element.setAttribute('class','');
+        element = document.getElementById("chakan");
+        element.setAttribute('class','active');
+        element = document.getElementById("tixin");
+        element.setAttribute('class','');
+
+        element = document.getElementById("content")
+        element.innerHTML = '<iframe src="favorites.html" style="width: 100vh;height: 100vh"></iframe>';
+
+    }
+
+    function change(){
+        shifoudenglu()
+        var element = document.getElementById("xiugai");
+        element.setAttribute('class','active');
+        element = document.getElementById("chakan");
+        element.setAttribute('class','');
+        element = document.getElementById("tixin");
+        element.setAttribute('class','');
+
+        element = document.getElementById("content")
+        element.innerHTML = '<iframe src="xgmm.html" style="width: 100vh;height: 100vh"></iframe>';
+
+    }
+</script>
+</body>
+</html>

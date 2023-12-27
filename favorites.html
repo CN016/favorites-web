@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>收藏夹信息展示</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    #overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+    }
+    #popup {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+    h2 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+    p {
+      margin: 10px 0;
+    }
+    input {
+      padding: 8px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    #collection-container {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+  <script src="j.js"></script>
+</head>
+<body>
+
+<div id="overlay">
+  <div id="popup">
+    <h2>请输入K密码</h2>
+    <p><input type="password" id="inputField"></p>
+    <button onclick="submitForm()">提交</button>
+  </div>
+</div>
+
+<div id="collection-container">
+  <h2>收藏夹信息</h2>
+  <input type="text" id="searchInput" placeholder="搜索...">
+  <button onclick="searchCollection()">搜索</button>
+  <button onclick="openAddPopup()">添加</button>
+  <table>
+    <thead>
+    <tr>
+      <th>网站</th>
+      <th>用户名</th>
+      <th>密码</th>
+      <th>操作</th>
+    </tr>
+    </thead>
+    <tbody id="collection-body">
+    <!-- Table rows will be added dynamically -->
+    </tbody>
+  </table>
+</div>
+
+<div id="addPopup" style="display: none;">
+  <h2>添加收藏夹</h2>
+  <p>网站：<input type="text" id="urlInput"></p>
+  <p>用户名：<input type="text" id="usernameInput"></p>
+  <p>密码：<input type="password" id="passwordInput"></p>
+  <button onclick="addCollection()">添加</button>
+  <button onclick="closeAddPopup()">取消</button>
+</div>
+
+
+<script>
+  //判断是否有k密码
+  let token = localStorage.getItem('token');
+
+  let s = {
+    "url": "/api/favorites/get",
+    "method": "GET",
+    "timeout": 0,
+    "async": false,
+    "headers": {
+      "token": token,
+      "k":"inputFieldValue"
+    },
+    "success": function (response,status,xhr) {
+
+      if (response.toString().includes('请先设置k密码')){
+        alert('请先设置k密码')
+        window.open("settingK.html");
+      }
+    },
+    "error": function (error) {
+      console.log('错误');
+    }
+  };
+  $.ajax(s);
+
+
+  let data;
+  let inputFieldValue;
+  openPopup()
+
+  function openAddPopup() {
+    // 清空输入框
+    document.getElementById('urlInput').value = '';
+    document.getElementById('usernameInput').value = '';
+    document.getElementById('passwordInput').value = '';
+
+    // 显示弹窗
+    document.getElementById('addPopup').style.display = 'block';
+    document.getElementById('collection-container').style.display = 'none';
+  }
+
+  function closeAddPopup() {
+    // 关闭弹窗
+    document.getElementById('addPopup').style.display = 'none';
+    document.getElementById('collection-container').style.display = 'block';
+  }
+
+  async function addCollection() {
+    const url = document.getElementById('urlInput').value;
+    const username = document.getElementById('usernameInput').value;
+    const password = document.getElementById('passwordInput').value;
+
+    // 在这里添加发送添加收藏夹的请求的逻辑
+    // 请根据实际情况修改发送请求的方式
+
+    const newCollection = {
+      "url": url,
+      "webUsername": username,
+      "webPassword": password,
+      "eventReminder": "elit ipsum in"
+    };
+
+    try {
+      const response = await $.ajax({
+        url: "/api/favorites",
+        method: "POST",
+        timeout: 0,
+        async: false,
+        headers: {
+          "Content-Type": "application/json",
+          "token": token
+        },
+        data: JSON.stringify(newCollection),
+        success: function (data, status, xhr) {
+          closeAddPopup();
+          re();
+        }
+      });
+
+      if (response.toString().includes("成功")){
+        alert("添加收藏夹成功")
+        re()
+        displayData(data)
+        closeAddPopup();
+      }else {
+        alert("添加收藏夹失败")
+      }
+      // 关闭弹窗
+
+      // 如果成功，关闭弹窗，并刷新显示数据
+    } catch (error){
+      alert("添加收藏夹失败")
+    }
+
+  }
+
+  // function addCollection() {
+  //   const inputFieldValue = document.getElementById('inputField').value;
+  //   // 在这里添加发送添加收藏夹的请求的逻辑
+  //   // 如果成功，关闭弹窗，并刷新显示数据
+  //   closePopup();
+  //   // 示例：刷新数据
+  //   fetchDataAndDisplay();
+  // }
+
+  // 示例：获取数据并显示
+  function fetchDataAndDisplay() {
+
+    displayData(data);
+  }
+
+  function editCollection(index) {
+    // 在这里添加发送修改收藏夹的请求的逻辑
+    // 示例：弹出修改对话框
+    const newWebPassword = prompt("请输入新的密码");
+    if (newWebPassword !== null) {
+      // 用户点击确定
+      data[index].webPassword = newWebPassword;
+      displayData(data);
+    }
+  }
+
+  function deleteCollection(index) {
+    // 在这里添加发送删除收藏夹的请求的逻辑
+    // 示例：确认是否删除
+    const confirmDelete = confirm("确认删除这个收藏夹吗？");
+    if (confirmDelete) {
+      // 用户点击确定
+      data.splice(index, 1);
+      displayData(data);
+    }
+  }
+
+  function searchCollection() {
+    const searchValue = document.getElementById('searchInput').value.toLowerCase();
+    const filteredData = data.filter(item =>
+            item.url.toLowerCase().includes(searchValue) ||
+            item.webUsername.toLowerCase().includes(searchValue) ||
+            item.webPassword.toLowerCase().includes(searchValue)
+    );
+    displayData(filteredData);
+  }
+
+
+
+  function openPopup() {
+    document.getElementById('overlay').style.display = 'block';
+    document.getElementById('collection-container').style.display = 'none';
+  }
+
+  function closePopup() {
+    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('collection-container').style.display = 'block';
+  }
+
+  function re(){
+    let settings = {
+      "url": "/api/favorites/get",
+      "method": "GET",
+      "timeout": 0,
+      "async": false,
+      "headers": {
+        "token": token,
+        "k":inputFieldValue
+      },
+      "success": function (response,status,xhr) {
+
+        if (JSON.stringify(response).includes('[')){
+          data = response
+          displayData(data)
+        }
+      },
+      "error": function (error) {
+        console.log('错误');
+      }
+    };
+    $.ajax(settings);
+  }
+
+  function submitForm() {
+    // 获取输入的信息
+    inputFieldValue = document.getElementById('inputField').value;
+    let settings = {
+      "url": "/api/favorites/get",
+      "method": "GET",
+      "timeout": 0,
+      "async": false,
+      "headers": {
+        "token": token,
+        "k":inputFieldValue
+      },
+      "success": function (response,status,xhr) {
+        // alert(JSON.stringify(response))
+        if (status === 500){
+          alert('错误');
+          return;
+        }
+        if (response.toString().includes("请先设置k密码")){
+          alert('请先设置k密码');
+          window.open("settingK.html");
+          return;
+        }
+        if (response.toString().includes('k密码') || response.toString().includes('解密失败')){
+          alert('K密码错误');
+          return;
+        }
+        if (JSON.stringify(response).includes('[')){
+          data = response
+          // 关闭弹窗
+          closePopup();
+          displayData(data)
+          return;
+        }
+        alert('错误')
+      },
+      "error": function (error) {
+        alert('错误');
+      }
+    };
+    $.ajax(settings);
+    // 在这里可以处理输入的信息，例如发送到服务器等操作
+
+
+  }
+
+
+  // Function to display data in the table
+  function displayData(data) {
+    const tbody = document.getElementById('collection-body');
+    console.log(data)
+    // data = JSON.parse(data);
+
+    // Clear existing rows
+    tbody.innerHTML = '';
+
+    // Loop through the data and add rows to the table
+    data.forEach(item => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+                <td>${item.url}</td>
+                <td>${item.webUsername}</td>
+                <td>${item.webPassword}</td>
+            `;
+      tbody.appendChild(row);
+    });
+  }
+
+</script>
+
+</body>
+</html>

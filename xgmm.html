@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>修改密码</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            text-align: center;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        input {
+            width: 200px;
+            padding: 10px;
+            margin: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+    <script src="j.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <h2>修改密码</h2>
+    <label for="oldPassword">旧密码：</label>
+    <input type="password" id="oldPassword" placeholder="输入旧密码">
+    <label for="newPassword">新密码：</label>
+    <input type="password" id="newPassword" placeholder="输入新密码">
+    <button onclick="changeSystemPassword()">修改用户密码</button>
+    <button onclick="changeUserPassword()">修改K密码</button>
+</div>
+
+<script>
+    let token = localStorage.getItem('token');
+
+    function changeUserPassword() {
+        const oldPassword = document.getElementById('oldPassword').value;
+        const newPassword = document.getElementById('newPassword').value;
+
+        let settings = {
+            "url": "/api/user/modify/k",
+            "method": "PUT",
+            "timeout": 0,
+            "async": false,
+            "headers": {
+                "token": token,
+                "Content-Type": "application/json"
+            },
+            "data":JSON.stringify({
+                "old_k": oldPassword,
+                "new_k": newPassword
+            }),
+            "success": function (response,status,xhr) {
+                if (status === 500){
+                    alert('失败');
+                    return;
+                }
+                if (response.toString().includes('成功')){
+                    alert('修改K密码成功');
+                    return;
+                }
+                alert(response.toString());
+            },
+            "error": function (error) {
+                alert('失败');
+            }
+        };
+        $.ajax(settings);
+    }
+
+    function changeSystemPassword() {
+        const oldPassword = document.getElementById('oldPassword').value;
+        const newPassword = document.getElementById('newPassword').value;
+
+        // 在这里添加发送修改系统密码的请求的逻辑
+        // 根据实际情况处理成功或失败
+        let settings = {
+            "url": "/api/user/modify/password",
+            "method": "PUT",
+            "timeout": 0,
+            "async": false,
+            "headers": {
+                "token": token,
+                "Content-Type": "application/json"
+            },
+            "data":JSON.stringify({
+                "old_password": oldPassword,
+                "new_password": newPassword
+            }),
+            "success": function (response,status,xhr) {
+                if (status === 500){
+                    alert('失败');
+                    return;
+                }
+                if (response.toString().includes('成功')){
+                    alert('修改用户密码成功');
+                    localStorage.setItem('token','')
+                    // window.location.href = 'index.html'
+                    return;
+                }
+                alert(response.toString());
+            },
+            "error": function (error) {
+                alert('失败');
+            }
+        };
+        $.ajax(settings);
+    }
+</script>
+
+</body>
+</html>

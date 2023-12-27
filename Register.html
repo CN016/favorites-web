@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户注册</title>
+    <link href="ico.jpg" rel="icon">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: url('./bj.jpg') center/100% 100% no-repeat fixed;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        #registration-form {
+            position: fixed;
+            top: 150px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            width: 400px;
+            max-width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+            animation: fadeInUpCenter 0.6s ease-out;
+            margin-top: 0px; /* 顶部距离 */
+        }
+
+        @keyframes fadeInUpCenter {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            margin-top: 5px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .terms {
+            font-size: 12px;
+            color: #777;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .terms a {
+            color: #333;
+            text-decoration: underline;
+        }
+        .my-logo img{
+            top: 0;
+            margin-top: 0;
+            width: 500px;
+            height: auto;
+            margin-right: 20px; /* 设置图片右边距，可以根据需要调整 */
+        }
+        .my-logo{
+            position: fixed;
+            display: inline-block;
+            top: 45px;
+            margin-left: 100px;
+            margin-top: 0; /* 顶部距离 */
+            margin-bottom: 0; /* 设置外边距为零 */
+        }
+
+        /*.my-logo,
+        #registration-form {
+            text-align: center; !* 如果内容需要居中对齐 *!
+        }*/
+
+    </style>
+
+    <script src="./j.js" ></script>
+</head>
+<body>
+<div class="my-logo" >
+    <img src="pocket.png">
+</div>
+<div id="registration-form">
+    <h2>用户注册</h2>
+    <f action="#" method="post">
+        <l for="username">用户名:</l>
+        <input type="text" id="username" name="username" required>
+
+
+        <l for="password">密码:</l>
+        <input type="password" id="password" name="password" required>
+
+        <l for="password">确认密码:</l>
+        <input type="password" id="re_password" name="re_password" required>
+
+        <button  onclick="register()">注册</button>
+        <button  onclick="login()">返回首页</button>
+    </f>
+    <p class="terms">点击注册表示您同意我们的 <a href="./fw.html">服务条款</a>.</p>
+</div>
+</body>
+<script>
+    function login(){
+        window.location.href="./index.html";
+    }
+
+    function register() {
+        let username = document.getElementById('username').value;
+        let password = document.getElementById('password').value;
+        let re_password = document.getElementById('re_password').value;
+
+        if (password !== re_password){
+            alert('密码和确认密码不匹配！');
+            return;
+        }
+
+        let settings = {
+            "url": "/api/register",
+            "method": "POST",
+            "timeout": 0,
+            "async": false,
+            "headers": {
+                "Content-Type": "application/json"
+            },
+            "data": JSON.stringify({
+                "username": username,
+                "password": password
+            }),
+            "success": function (response) {
+                if (response.toString().includes("成功")){
+                    alert('注册成功！'+'\n'+'您的用户名为：'+username+'\n'+'您的密码为：'+password+'\n'+'请牢记您的密码！');
+                    window.location.href="./index.html";
+                    return;
+                }
+
+                console.log(response);
+                alert(response);
+            },
+            'error': function (error) {
+                console.log(error);
+                alert('注册失败！')
+            }
+        };
+
+        $.ajax(settings);
+
+    }
+</script>
+</html>
